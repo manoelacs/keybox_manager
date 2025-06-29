@@ -60,7 +60,27 @@ class _KeyBoxCardState extends State<KeyBoxCard> {
               );
               if (result == true) setState(() {});
             } else if (value == 'delete') {
-              widget.provider.deleteKeyBox(widget.keybox);
+              final shouldDelete = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Delete KeyBox'),
+                  content: const Text(
+                      'Are you sure you want to delete this KeyBox?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Delete'),
+                    ),
+                  ],
+                ),
+              );
+              if (shouldDelete == true) {
+                widget.provider.deleteKeyBox(widget.keybox);
+              }
             }
           },
           itemBuilder: (context) => [
