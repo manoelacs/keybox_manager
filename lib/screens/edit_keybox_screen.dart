@@ -4,22 +4,32 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../models/keybox.dart';
 import '../providers/keybox_provider.dart';
-import '../utils/code_generator.dart';
 
-class AddKeyBoxScreen extends StatefulWidget {
-  const AddKeyBoxScreen({super.key});
+class EditKeyBoxScreen extends StatefulWidget {
+  final KeyBox keybox;
+
+  const EditKeyBoxScreen({required this.keybox, super.key});
 
   @override
-  _AddKeyBoxScreenState createState() => _AddKeyBoxScreenState();
+  _EditKeyBoxScreenState createState() => _EditKeyBoxScreenState();
 }
 
-class _AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
+class _EditKeyBoxScreenState extends State<EditKeyBoxScreen> {
   final _formKey = GlobalKey<FormState>();
-  String name = '';
-  String address = '';
-  String description = '';
-  String photoPath = '';
+  late String name;
+  late String address;
+  late String description;
+  late String photoPath;
   final picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    name = widget.keybox.name;
+    address = widget.keybox.address;
+    description = widget.keybox.description;
+    photoPath = widget.keybox.photoPath;
+  }
 
   Future pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
@@ -34,7 +44,7 @@ class _AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<KeyBoxProvider>(context, listen: false);
     return Scaffold(
-      appBar: AppBar(title: const Text('Add KeyBox')),
+      appBar: AppBar(title: const Text('Edit KeyBox')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -42,16 +52,19 @@ class _AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
           child: ListView(
             children: [
               TextFormField(
+                initialValue: name,
                 decoration: const InputDecoration(labelText: 'Name'),
                 onSaved: (value) => name = value ?? '',
                 validator: (value) => value!.isEmpty ? 'Required' : null,
               ),
               TextFormField(
+                initialValue: address,
                 decoration: const InputDecoration(labelText: 'Address'),
                 onSaved: (value) => address = value ?? '',
                 validator: (value) => value!.isEmpty ? 'Required' : null,
               ),
               TextFormField(
+                initialValue: description,
                 decoration: const InputDecoration(labelText: 'Description'),
                 onSaved: (value) => description = value ?? '',
               ),
@@ -60,7 +73,7 @@ class _AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                   ? Image.file(File(photoPath), height: 100)
                   : ElevatedButton(
                       onPressed: pickImage,
-                      child: Text('Pick Photo'),
+                      child: const Text('Pick Photo'),
                     ),
               const SizedBox(height: 20),
               ElevatedButton(
@@ -68,22 +81,17 @@ class _AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    final newKeyBox = KeyBox(
+                    provider.editKeyBox(
+                      widget.keybox,
                       name: name,
                       address: address,
                       description: description,
                       photoPath: photoPath,
-                      currentCode: generateRandomCode(),
                     );
-                    provider.addKeyBox(newKeyBox);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('KeyBox added')),
-                    );
-
-                    Navigator.pop(context);
+                    Navigator.pop(context, true);
                   }
                 },
-              )
+              ),
             ],
           ),
         ),

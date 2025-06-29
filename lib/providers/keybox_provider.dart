@@ -20,4 +20,24 @@ class KeyBoxProvider with ChangeNotifier {
     keybox.save();
     notifyListeners();
   }
+
+  void deleteKeyBox(KeyBox keybox) {
+    keybox.delete();
+    notifyListeners();
+  }
+
+  void editKeyBox(
+    KeyBox keybox, {
+    required String name,
+    required String address,
+    required String description,
+    required String photoPath,
+  }) {
+    keybox.name = name;
+    keybox.address = address;
+    keybox.description = description;
+    keybox.photoPath = photoPath;
+    keybox.save();
+    notifyListeners();
+  }
 }

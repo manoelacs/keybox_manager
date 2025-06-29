@@ -9,7 +9,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 class KeyBoxDetailScreen extends StatelessWidget {
   final KeyBox keybox;
 
-  KeyBoxDetailScreen({required this.keybox});
+  const KeyBoxDetailScreen({super.key, required this.keybox});
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +51,16 @@ class KeyBoxDetailScreen extends StatelessWidget {
               },
             ),
             const SizedBox(height: 20),
-            QrImage(data: keybox.currentCode, size: 150),
+            QrImageView(
+              data: keybox.currentCode,
+              version: QrVersions.auto,
+              size: 150,
+              gapless: false,
+            ),
             const SizedBox(height: 20),
             const Text('Previous Codes:',
                 style: TextStyle(fontWeight: FontWeight.bold)),
-            ...keybox.previousCodes.reversed.map((c) => Text(c)).toList(),
+            ...keybox.previousCodes.reversed.map((c) => Text(c)),
           ],
         ),
       ),
