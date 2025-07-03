@@ -19,16 +19,21 @@ class HomeScreen extends StatelessWidget {
             icon: const Icon(Icons.upload_file),
             onPressed: () async {
               await exportKeyBoxes();
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Backup exported')));
+
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Backup exported')));
+              }
             },
           ),
           IconButton(
             icon: const Icon(Icons.download),
             onPressed: () async {
               await importKeyBoxes();
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Backup imported')));
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Backup imported')));
+              }
             },
           ),
         ],

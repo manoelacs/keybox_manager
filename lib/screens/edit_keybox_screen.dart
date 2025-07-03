@@ -11,10 +11,10 @@ class EditKeyBoxScreen extends StatefulWidget {
   const EditKeyBoxScreen({required this.keybox, super.key});
 
   @override
-  _EditKeyBoxScreenState createState() => _EditKeyBoxScreenState();
+  EditKeyBoxScreenState createState() => EditKeyBoxScreenState();
 }
 
-class _EditKeyBoxScreenState extends State<EditKeyBoxScreen> {
+class EditKeyBoxScreenState extends State<EditKeyBoxScreen> {
   final _formKey = GlobalKey<FormState>();
   late String name;
   late String address;

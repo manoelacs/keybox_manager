@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData.dark(), // Enables dark mode theme
       themeMode: ThemeMode.system, // Uses system theme by default
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }

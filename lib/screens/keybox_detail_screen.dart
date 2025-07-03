@@ -5,6 +5,7 @@ import '../models/keybox.dart';
 import '../providers/keybox_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 
 class KeyBoxDetailScreen extends StatelessWidget {
   final KeyBox keybox;
@@ -52,10 +53,22 @@ class KeyBoxDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             QrImageView(
-              data: keybox.currentCode,
+              data:
+                  '${keybox.currentCode}\nAddress: ${keybox.address}\nDescription: ${keybox.description}',
               version: QrVersions.auto,
               size: 150,
               gapless: false,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () {
+                Share.share(
+                  '${keybox.currentCode}\nAddress: ${keybox.address}\nDescription: ${keybox.description}',
+                  subject: 'KeyBox QR Code',
+                );
+              },
+              icon: const Icon(Icons.share),
+              label: const Text('Share QR Code'),
             ),
             const SizedBox(height: 20),
             const Text('Previous Codes:',
