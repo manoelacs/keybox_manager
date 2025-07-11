@@ -62,10 +62,19 @@ class KeyBoxDetailScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () {
-                Share.share(
-                  '${keybox.currentCode}\nAddress: ${keybox.address}\nDescription: ${keybox.description}',
-                  subject: 'KeyBox QR Code',
-                );
+                if (keybox.latitude != 0 && keybox.longitude != 0) {
+                  String googleMapsLink =
+                      'https://www.google.com/maps/search/?api=1&query=${keybox.latitude},${keybox.longitude}';
+                  Share.share(
+                    '${keybox.currentCode}\nAddress: ${keybox.address}\nGoogle Maps: $googleMapsLink\nDescription: ${keybox.description}',
+                    subject: 'KeyBox QR Code',
+                  );
+                } else {
+                  Share.share(
+                    '${keybox.currentCode}\nAddress: ${keybox.address}\nDescription: ${keybox.description}',
+                    subject: 'KeyBox QR Code',
+                  );
+                }
               },
               icon: const Icon(Icons.share),
               label: const Text('Share QR Code'),

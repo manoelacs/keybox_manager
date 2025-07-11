@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../models/keybox.dart';
 import '../providers/keybox_provider.dart';
+import '../widgets/location_button.dart';
 
 class EditKeyBoxScreen extends StatefulWidget {
   final KeyBox keybox;
@@ -75,6 +76,17 @@ class EditKeyBoxScreenState extends State<EditKeyBoxScreen> {
                       onPressed: pickImage,
                       child: const Text('Pick Photo'),
                     ),
+              const SizedBox(height: 10),
+              LocationButton(
+                onLocationFetched:
+                    (fetchedAddress, fetchedLatitude, fetchedLongitude) {
+                  setState(() {
+                    address = fetchedAddress;
+                    widget.keybox.latitude = fetchedLatitude;
+                    widget.keybox.longitude = fetchedLongitude;
+                  });
+                },
+              ),
               const SizedBox(height: 20),
               ElevatedButton(
                 child: const Text('Save'),
@@ -87,6 +99,8 @@ class EditKeyBoxScreenState extends State<EditKeyBoxScreen> {
                       address: address,
                       description: description,
                       photoPath: photoPath,
+                      latitude: widget.keybox.latitude,
+                      longitude: widget.keybox.longitude,
                     );
                     Navigator.pop(context, true);
                   }

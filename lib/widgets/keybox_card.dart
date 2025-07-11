@@ -8,7 +8,7 @@ import '../screens/keybox_detail_screen.dart';
 import '../modules/ads/ads_manager.dart';
 import '../modules/premium/premium_manager.dart';
 import '../modules/ads/ads_constants.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+/* import 'package:google_mobile_ads/google_mobile_ads.dart'; */
 
 class KeyBoxCard extends StatefulWidget {
   final KeyBox keybox;
@@ -22,20 +22,20 @@ class KeyBoxCard extends StatefulWidget {
 
 class KeyBoxCardState extends State<KeyBoxCard> {
   bool showCode = false;
-  BannerAd? bannerAd;
+/*   BannerAd? bannerAd; */
 
   @override
   void initState() {
     super.initState();
-    if (!PremiumManager().isPremiumUser()) {
+    /* if (!PremiumManager().isPremiumUser()) {
       bannerAd = AdsManager().createBannerAd(bannerAdUnitId);
       bannerAd?.load();
-    }
+    } */
   }
 
   @override
   void dispose() {
-    bannerAd?.dispose();
+    /*   bannerAd?.dispose(); */
     super.dispose();
   }
 
@@ -110,12 +110,48 @@ class KeyBoxCardState extends State<KeyBoxCard> {
                   if (shouldDelete == true) {
                     widget.provider.deleteKeyBox(widget.keybox);
                   }
+                } else if (value == 'add_code') {
+                  String inputValue = '';
+                  final newCode = await showDialog<String>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Add Existing Code'),
+                      content: TextField(
+                        decoration: const InputDecoration(
+                          hintText: 'Enter a 4-digit code',
+                        ),
+                        keyboardType: TextInputType.number,
+                        maxLength: 4,
+                        onChanged: (value) {
+                          inputValue =
+                              value.length > 4 ? value.substring(0, 4) : value;
+                        },
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, null),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, inputValue),
+                          child: const Text('Add'),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (newCode != null) {
+                    setState(() {
+                      widget.keybox.currentCode = newCode;
+                    });
+                  }
                 }
               },
               itemBuilder: (context) => [
                 const PopupMenuItem(value: 'copy', child: Text('Copy Code')),
                 const PopupMenuItem(value: 'edit', child: Text('Edit')),
                 const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                const PopupMenuItem(
+                    value: 'add_code', child: Text('Add Existing Code')),
               ],
             ),
             onTap: () {
@@ -127,12 +163,12 @@ class KeyBoxCardState extends State<KeyBoxCard> {
               );
             },
           ),
-          if (bannerAd != null)
+          /*     if (bannerAd != null)
             SizedBox(
               height: bannerAd!.size.height.toDouble(),
               width: bannerAd!.size.width.toDouble(),
               child: AdWidget(ad: bannerAd!),
-            ),
+            ), */
         ],
       ),
     );

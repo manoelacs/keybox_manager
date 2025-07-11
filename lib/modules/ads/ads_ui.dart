@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/* import 'package:flutter/material.dart';
 import 'ads_manager.dart';
 
 class AdsUI extends StatelessWidget {
@@ -19,3 +19,4 @@ class AdsUI extends StatelessWidget {
     );
   }
 }
+ */

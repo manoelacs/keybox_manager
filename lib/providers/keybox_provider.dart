@@ -32,11 +32,15 @@ class KeyBoxProvider with ChangeNotifier {
     required String address,
     required String description,
     required String photoPath,
+    required double latitude,
+    required double longitude,
   }) {
     keybox.name = name;
     keybox.address = address;
     keybox.description = description;
     keybox.photoPath = photoPath;
+    keybox.latitude = latitude;
+    keybox.longitude = longitude;
     keybox.save();
     notifyListeners();
   }

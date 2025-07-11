@@ -23,6 +23,8 @@ class KeyBoxAdapter extends TypeAdapter<KeyBox> {
       photoPath: fields[3] as String,
       currentCode: fields[4] as String,
       previousCodes: (fields[5] as List).cast<String>(),
+      latitude: fields[6] as double,
+      longitude: fields[7] as double,
     );
   }
 

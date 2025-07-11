@@ -36,7 +36,31 @@ class HomeScreen extends StatelessWidget {
               }
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.map),
+            onPressed: () {
+              Navigator.pushNamed(context, '/map');
+            },
+          ),
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            ListTile(
+              title: const Text('Home'),
+              onTap: () {
+                Navigator.pushReplacementNamed(context, '/');
+              },
+            ),
+            ListTile(
+              title: const Text('View Map'),
+              onTap: () {
+                Navigator.pushNamed(context, '/map');
+              },
+            ),
+          ],
+        ),
       ),
       body: Consumer<KeyBoxProvider>(
         builder: (context, provider, child) {
@@ -63,6 +87,25 @@ class HomeScreen extends StatelessWidget {
           if (result == true) {
             // Trigger UI rebuild after adding new keybox
             (context as Element).markNeedsBuild();
+          }
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map),
+            label: 'Map',
+          ),
+        ],
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pushReplacementNamed(context, '/');
+          } else if (index == 1) {
+            Navigator.pushNamed(context, '/map');
           }
         },
       ),

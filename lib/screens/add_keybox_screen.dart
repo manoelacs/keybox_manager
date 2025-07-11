@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
 import '../models/keybox.dart';
 import '../providers/keybox_provider.dart';
 import '../utils/code_generator.dart';
+import '../widgets/location_button.dart';
 
 class AddKeyBoxScreen extends StatefulWidget {
   const AddKeyBoxScreen({super.key});
@@ -22,9 +21,12 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
   String address = '';
   String description = '';
   String photoPath = '';
+  String currentCode = '';
   final picker = ImagePicker();
   final addressController = TextEditingController();
   bool isLoading = false;
+  double latitude = 0.0;
+  double longitude = 0.0;
 
   @override
   void initState() {
@@ -37,83 +39,6 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
     if (pickedFile != null) {
       setState(() {
         photoPath = pickedFile.path;
-      });
-    }
-  }
-
-  Future<void> fetchAddressFromLocation() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        throw Exception('Location services are disabled.');
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          throw Exception('Location permissions are denied.');
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        throw Exception('Location permissions are permanently denied.');
-      }
-
-      try {
-        final position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
-          timeLimit: const Duration(seconds: 10),
-        );
-        print('Current position: $position');
-
-        final placemarks = await placemarkFromCoordinates(
-          position.latitude,
-          position.longitude,
-        );
-
-        if (placemarks.isNotEmpty) {
-          final place = placemarks.firstWhere(
-            (p) => p.thoroughfare?.isNotEmpty ?? false,
-            orElse: () => placemarks.first,
-          );
-
-          print(place.thoroughfare);
-          final placemark = place;
-          setState(() {
-            address =
-                '${placemark.thoroughfare}, ${placemark.locality}, ${placemark.country}';
-            addressController.text = address;
-          });
-          print('Address fetched: $address');
-        }
-      } on TimeoutException {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Location request timed out.')),
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to fetch location: $e')),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to fetch location: $e')),
-        );
-      }
-    } finally {
-      setState(() {
-        isLoading = false;
       });
     }
   }
@@ -143,22 +68,27 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                         address = value ?? 'The address of the KeyBox',
                     validator: (value) => value!.isEmpty ? 'Required' : null,
                   ),
-                  OutlinedButton.icon(
-                    onPressed: fetchAddressFromLocation,
-                    icon: const Icon(Icons.location_on, color: Colors.blue),
-                    label: const Text('Use Current Location',
-                        style: TextStyle(color: Colors.blue)),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.blue),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
+                  LocationButton(
+                    onLocationFetched:
+                        (fetchedAddress, fetchedLatitude, fetchedLongitude) {
+                      setState(() {
+                        address = fetchedAddress;
+                        latitude = fetchedLatitude;
+                        longitude = fetchedLongitude;
+                        addressController.text = fetchedAddress;
+                      });
+                    },
                   ),
                   TextFormField(
                     decoration: const InputDecoration(labelText: 'Description'),
                     onSaved: (value) =>
                         description = value ?? 'The description of the KeyBox',
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(
+                        labelText: 'Existing Code (Optional)'),
+                    onSaved: (value) =>
+                        currentCode = value ?? generateRandomCode(),
                   ),
                   const SizedBox(height: 10),
                   photoPath.isNotEmpty
@@ -178,7 +108,9 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                           address: address,
                           description: description,
                           photoPath: photoPath,
-                          currentCode: generateRandomCode(),
+                          currentCode: currentCode,
+                          latitude: latitude,
+                          longitude: longitude,
                         );
                         provider.addKeyBox(newKeyBox);
                         ScaffoldMessenger.of(context).showSnackBar(

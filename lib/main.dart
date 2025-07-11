@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:hive_flutter/hive_flutter.dart';
@@ -5,12 +6,45 @@ import 'package:keybox_manager/providers/keybox_provider.dart';
 import 'package:provider/provider.dart';
 import 'models/keybox.dart';
 import 'screens/home_screen.dart';
+import 'screens/map_screen.dart'; // Import the MapScreen
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(KeyBoxAdapter());
-  await Hive.openBox<KeyBox>('keyboxes');
+  var existingBox =
+      Hive.isBoxOpen('keyboxes') ? Hive.box<KeyBox>('keyboxes') : null;
+  if (existingBox != null) {
+    await existingBox.close();
+  }
+
+  var encryptionKey = Hive.generateSecureKey();
+
+  var box = await Hive.openBox<KeyBox>(
+    'keyboxes',
+    encryptionCipher: HiveAesCipher(encryptionKey),
+  );
+
+  if (kDebugMode) {
+    print('Hive initialized with box: ${box.name}');
+    print('Box name: ${box.name}');
+    print('Path: ${box.path}');
+  }
+
+  if (box.isEmpty) {
+    // Initialize with default values if the box is empty
+    box.put(
+        'default',
+        KeyBox(
+          name: 'Default KeyBox',
+          currentCode: '0000',
+          address: 'No Address',
+          description: 'Default Description',
+          photoPath: '',
+          latitude: 0.0,
+          longitude: 0.0,
+        ));
+  }
 
   runApp(
     ChangeNotifierProvider(
@@ -53,7 +87,10 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData.dark(), // Enables dark mode theme
       themeMode: ThemeMode.system, // Uses system theme by default
-      home: const HomeScreen(),
+      routes: {
+        '/': (context) => const HomeScreen(),
+        '/map': (context) => const MapScreen(),
+      },
     );
   }
 }

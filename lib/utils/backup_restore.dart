@@ -14,6 +14,8 @@ Future<void> exportKeyBoxes() async {
             'photoPath': kb.photoPath,
             'currentCode': kb.currentCode,
             'previousCodes': kb.previousCodes,
+            'latitude': kb.latitude,
+            'longitude': kb.longitude,
           })
       .toList();
 
@@ -41,6 +43,8 @@ Future<void> importKeyBoxes() async {
       photoPath: item['photoPath'],
       currentCode: item['currentCode'],
       previousCodes: List<String>.from(item['previousCodes']),
+      latitude: item['latitude'],
+      longitude: item['longitude'],
     );
     box.add(kb);
   }

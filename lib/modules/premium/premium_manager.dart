@@ -1,4 +1,4 @@
-import 'package:in_app_purchase/in_app_purchase.dart';
+/* import 'package:in_app_purchase/in_app_purchase.dart';
 
 class PremiumManager {
   static final PremiumManager _instance = PremiumManager._internal();
@@ -27,3 +27,4 @@ class PremiumManager {
     return false;
   }
 }
+ */
