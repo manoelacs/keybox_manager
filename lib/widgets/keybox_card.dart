@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/keybox.dart';
@@ -31,6 +32,9 @@ class KeyBoxCardState extends State<KeyBoxCard> {
       bannerAd = AdsManager().createBannerAd(bannerAdUnitId);
       bannerAd?.load();
     } */
+    if (kDebugMode) {
+      print('KeyBoxCard created for: ${widget.keybox.name}');
+    }
   }
 
   @override

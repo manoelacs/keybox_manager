@@ -15,7 +15,7 @@ class KeyBoxDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<KeyBoxProvider>(context, listen: false);
-
+    print('KeyBoxDetailScreen created for: ${keybox.currentCode}');
     return Scaffold(
       appBar: AppBar(title: Text(keybox.name)),
       body: Padding(

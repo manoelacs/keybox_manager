@@ -34,8 +34,8 @@ class KeyBox extends HiveObject {
     required this.description,
     required this.currentCode,
     required this.photoPath,
-    this.previousCodes = const [],
+    List<String>? previousCodes,
     required this.latitude, // Initialize latitude
     required this.longitude, // Initialize longitude
-  });
+  }) : previousCodes = previousCodes ?? [];
 }

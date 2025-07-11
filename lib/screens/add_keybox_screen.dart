@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
@@ -87,8 +88,14 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                   TextFormField(
                     decoration: const InputDecoration(
                         labelText: 'Existing Code (Optional)'),
-                    onSaved: (value) =>
-                        currentCode = value ?? generateRandomCode(),
+                    onSaved: (value) {
+                      final code = generateRandomCode();
+                      currentCode =
+                          value != null && value.isNotEmpty ? value : code;
+                      if (kDebugMode) {
+                        print('Generated code: $code');
+                      }
+                    },
                   ),
                   const SizedBox(height: 10),
                   photoPath.isNotEmpty

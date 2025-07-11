@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import '../models/keybox.dart';
 import '../utils/code_generator.dart';
@@ -17,6 +17,17 @@ class KeyBoxProvider with ChangeNotifier {
     String newCode = generateRandomCode();
     keybox.previousCodes.add(keybox.currentCode);
     keybox.currentCode = newCode;
+    keybox.save();
+    if (kDebugMode) {
+      print('Updated code for ${keybox.name}: ${keybox.currentCode}');
+    }
+    notifyListeners();
+  }
+
+  void createCode(KeyBox keybox) {
+    String newCode = generateRandomCode();
+    keybox.currentCode = newCode;
+    keybox.previousCodes.add(newCode);
     keybox.save();
     notifyListeners();
   }
