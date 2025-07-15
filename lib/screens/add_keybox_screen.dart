@@ -3,11 +3,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
+import 'package:keybox_manager/widgets/location_picker.dart';
 import 'package:provider/provider.dart';
 import '../models/keybox.dart';
 import '../providers/keybox_provider.dart';
 import '../utils/code_generator.dart';
 import '../widgets/location_button.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geocoding/geocoding.dart';
 
 class AddKeyBoxScreen extends StatefulWidget {
   const AddKeyBoxScreen({super.key});
@@ -35,6 +38,22 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
     addressController.text = address;
   }
 
+  static Future<String> getAddressFromCoordinates(
+      double latitude, double longitude) async {
+    // Implement the logic to fetch the address using latitude and longitude
+    // For example, using a geocoding API
+    try {
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(latitude, longitude);
+      if (placemarks.isNotEmpty) {
+        return placemarks.first.street ?? 'Unknown Address';
+      }
+      return 'Unknown Address';
+    } catch (e) {
+      return 'Error fetching address';
+    }
+  }
+
   Future pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
     if (pickedFile != null) {
@@ -42,6 +61,16 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
         photoPath = pickedFile.path;
       });
     }
+  }
+
+  void onLocationPicked(LatLng pickedLocation) async {
+    latitude = pickedLocation.latitude;
+    longitude = pickedLocation.longitude;
+    // Use a geocoding service to get the address from the latitude and longitude
+    address = await getAddressFromCoordinates(latitude, longitude);
+    setState(() {
+      addressController.text = address;
+    });
   }
 
   @override
@@ -69,16 +98,46 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                         address = value ?? 'The address of the KeyBox',
                     validator: (value) => value!.isEmpty ? 'Required' : null,
                   ),
-                  LocationButton(
-                    onLocationFetched:
-                        (fetchedAddress, fetchedLatitude, fetchedLongitude) {
-                      setState(() {
-                        address = fetchedAddress;
-                        latitude = fetchedLatitude;
-                        longitude = fetchedLongitude;
-                        addressController.text = fetchedAddress;
-                      });
-                    },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      LocationButton(
+                        onLocationFetched: (fetchedAddress, fetchedLatitude,
+                            fetchedLongitude) {
+                          setState(() {
+                            address = fetchedAddress;
+                            latitude = fetchedLatitude;
+                            longitude = fetchedLongitude;
+                            addressController.text = fetchedAddress;
+                          });
+                        },
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LocationPicker(
+                                  onLocationPicked: onLocationPicked,
+                                  initialLocation: LatLng(latitude, longitude),
+                                ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.map, color: Colors.blue),
+                          label: const Text('From Map',
+                              style: TextStyle(color: Colors.blue)),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.blue),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   TextFormField(
                     decoration: const InputDecoration(labelText: 'Description'),

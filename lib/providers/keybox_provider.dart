@@ -8,6 +8,12 @@ class KeyBoxProvider with ChangeNotifier {
 
   List<KeyBox> get keyboxes => _box.values.toList();
 
+  double _currentLatitude = 0.0; // Default value
+  double _currentLongitude = 0.0; // Default value
+
+  double get currentLatitude => _currentLatitude;
+  double get currentLongitude => _currentLongitude;
+
   void addKeyBox(KeyBox keybox) {
     _box.add(keybox);
     notifyListeners();
@@ -53,6 +59,12 @@ class KeyBoxProvider with ChangeNotifier {
     keybox.latitude = latitude;
     keybox.longitude = longitude;
     keybox.save();
+    notifyListeners();
+  }
+
+  void updateCurrentLocation(double latitude, double longitude) {
+    _currentLatitude = latitude;
+    _currentLongitude = longitude;
     notifyListeners();
   }
 }

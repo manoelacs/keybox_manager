@@ -62,23 +62,38 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: Consumer<KeyBoxProvider>(
-        builder: (context, provider, child) {
-          final keyboxes = provider.keyboxes;
-          if (keyboxes.isEmpty) {
-            return const Center(child: Text('No keyboxes added yet.'));
-          }
-          return ListView.builder(
-            itemCount: keyboxes.length,
-            itemBuilder: (context, index) {
-              final keybox = keyboxes[index];
-              return KeyBoxCard(keybox: keybox, provider: provider);
+      body: CustomScrollView(
+        slivers: [
+          /* const SliverAppBar(
+            pinned: true,
+            expandedHeight: 20.0,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text('KeyBoxes'),
+            ),
+          ), */
+          Consumer<KeyBoxProvider>(
+            builder: (context, provider, child) {
+              final keyboxes = provider.keyboxes;
+              if (keyboxes.isEmpty) {
+                return const SliverFillRemaining(
+                  child: Center(child: Text('No keyboxes added yet.')),
+                );
+              }
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final keybox = keyboxes[index];
+                    return KeyBoxCard(keybox: keybox, provider: provider);
+                  },
+                  childCount: keyboxes.length,
+                ),
+              );
             },
-          );
-        },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.white),
         onPressed: () async {
           final result = await Navigator.push(
             context,
