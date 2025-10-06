@@ -6,7 +6,7 @@ import 'package:keybox_manager/providers/keybox_provider.dart';
 import 'package:provider/provider.dart';
 import 'models/keybox.dart';
 import 'screens/home_screen.dart';
-import 'screens/map_screen.dart'; // Import the MapScreen
+/* import 'screens/map_screen.dart'; */ // Import the MapScreen
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -89,7 +89,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system, // Uses system theme by default
       routes: {
         '/': (context) => const HomeScreen(),
-        '/map': (context) => const MapScreen(),
+        /*  '/map': (context) => const MapScreen(), */
       },
     );
   }

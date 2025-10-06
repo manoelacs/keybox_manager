@@ -36,15 +36,9 @@ class HomeScreen extends StatelessWidget {
               }
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.map),
-            onPressed: () {
-              Navigator.pushNamed(context, '/map');
-            },
-          ),
         ],
       ),
-      drawer: Drawer(
+      /*     drawer: Drawer(
         child: ListView(
           children: [
             ListTile(
@@ -53,15 +47,9 @@ class HomeScreen extends StatelessWidget {
                 Navigator.pushReplacementNamed(context, '/');
               },
             ),
-            ListTile(
-              title: const Text('View Map'),
-              onTap: () {
-                Navigator.pushNamed(context, '/map');
-              },
-            ),
           ],
         ),
-      ),
+      ), */
       body: CustomScrollView(
         slivers: [
           /* const SliverAppBar(
@@ -105,25 +93,19 @@ class HomeScreen extends StatelessWidget {
           }
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      /*    bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
-          ),
         ],
         onTap: (index) {
           if (index == 0) {
             Navigator.pushReplacementNamed(context, '/');
-          } else if (index == 1) {
-            Navigator.pushNamed(context, '/map');
           }
         },
-      ),
+      ), */
     );
   }
 }

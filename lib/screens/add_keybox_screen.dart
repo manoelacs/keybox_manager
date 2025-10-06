@@ -113,7 +113,7 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                         },
                       ),
                       const SizedBox(width: 10),
-                      Expanded(
+                      /* Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () {
                             Navigator.push(
@@ -136,7 +136,7 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                             ),
                           ),
                         ),
-                      ),
+                      ), */
                     ],
                   ),
                   TextFormField(
