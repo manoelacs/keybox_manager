@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-class MapScreen2 extends StatelessWidget {
+class MapView extends StatelessWidget {
   final LatLng initialCenter;
   final List<LatLng> boxLocations;
-  const MapScreen2(
+  const MapView(
       {super.key, required this.initialCenter, required this.boxLocations});
 
   @override

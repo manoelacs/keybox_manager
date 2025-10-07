@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:keybox_manager/providers/keybox_provider.dart';
-import 'package:keybox_manager/screens/map_screen.dart';
+
 import 'package:keybox_manager/utils/locations.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'models/keybox.dart';
 import 'screens/home_screen.dart';
-import 'widgets/map_screen2.dart'; // Import the MapScreen
+import 'screens/map_screen_flutter_map.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -101,8 +101,7 @@ class MyApp extends StatelessWidget {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
                   final box = Hive.box<KeyBox>('keyboxes');
-                  return MapScreen2(
-                    initialCenter: snapshot.data as LatLng,
+                  return MapScreenFlutterMap(
                     boxLocations: box.values
                         .map((keybox) =>
                             LatLng(keybox.latitude, keybox.longitude))

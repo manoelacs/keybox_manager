@@ -51,6 +51,7 @@ class KeyBoxProvider with ChangeNotifier {
     required String photoPath,
     required double latitude,
     required double longitude,
+    required String videoPath,
   }) {
     keybox.name = name;
     keybox.address = address;
@@ -58,7 +59,7 @@ class KeyBoxProvider with ChangeNotifier {
     keybox.photoPath = photoPath;
     keybox.latitude = latitude;
     keybox.longitude = longitude;
-    keybox.save();
+    keybox.videoPath = videoPath;
     notifyListeners();
   }
 

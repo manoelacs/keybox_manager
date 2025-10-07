@@ -21,6 +21,7 @@ class EditKeyBoxScreenState extends State<EditKeyBoxScreen> {
   late String address;
   late String description;
   late String photoPath;
+  late String? videoPath;
   final picker = ImagePicker();
 
   @override
@@ -30,6 +31,8 @@ class EditKeyBoxScreenState extends State<EditKeyBoxScreen> {
     address = widget.keybox.address;
     description = widget.keybox.description;
     photoPath = widget.keybox.photoPath;
+    videoPath =
+        widget.keybox.videoPath.isNotEmpty ? widget.keybox.videoPath : null;
   }
 
   Future pickImage() async {
@@ -37,6 +40,24 @@ class EditKeyBoxScreenState extends State<EditKeyBoxScreen> {
     if (pickedFile != null) {
       setState(() {
         photoPath = pickedFile.path;
+      });
+    }
+  }
+
+  Future<void> _pickVideo() async {
+    final pickedFile = await picker.pickVideo(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        videoPath = pickedFile.path;
+      });
+    }
+  }
+
+  Future<void> _recordVideo() async {
+    final pickedFile = await picker.pickVideo(source: ImageSource.camera);
+    if (pickedFile != null) {
+      setState(() {
+        videoPath = pickedFile.path;
       });
     }
   }
@@ -77,6 +98,27 @@ class EditKeyBoxScreenState extends State<EditKeyBoxScreen> {
                       child: const Text('Pick Photo'),
                     ),
               const SizedBox(height: 10),
+              Row(
+                children: [
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.video_library),
+                    label: const Text('Pick Video'),
+                    onPressed: _pickVideo,
+                  ),
+                  const SizedBox(width: 10),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.videocam),
+                    label: const Text('Record Video'),
+                    onPressed: _recordVideo,
+                  ),
+                ],
+              ),
+              if (videoPath != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child:
+                      Text('Video selected: \\${videoPath!.split('/').last}'),
+                ),
               LocationButton(
                 onLocationFetched:
                     (fetchedAddress, fetchedLatitude, fetchedLongitude) {
@@ -101,6 +143,7 @@ class EditKeyBoxScreenState extends State<EditKeyBoxScreen> {
                       photoPath: photoPath,
                       latitude: widget.keybox.latitude,
                       longitude: widget.keybox.longitude,
+                      videoPath: videoPath ?? '',
                     );
                     Navigator.pop(context, true);
                   }

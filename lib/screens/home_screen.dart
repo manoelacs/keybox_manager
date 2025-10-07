@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:keybox_manager/widgets/map_screen2.dart';
+import 'package:keybox_manager/screens/map_screen_flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import '../providers/keybox_provider.dart';
@@ -7,8 +7,6 @@ import '../widgets/keybox_card.dart';
 import 'add_keybox_screen.dart';
 
 import '../utils/backup_restore.dart';
-
-import 'package:geolocator/geolocator.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -42,42 +40,12 @@ class HomeScreen extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.map),
-            onPressed: () async {
-              bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-              if (!serviceEnabled) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Location services are disabled.')),
-                );
-                return;
-              }
-              LocationPermission permission =
-                  await Geolocator.checkPermission();
-              if (permission == LocationPermission.denied) {
-                permission = await Geolocator.requestPermission();
-                if (permission == LocationPermission.denied) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Location permission denied.')),
-                  );
-                  return;
-                }
-              }
-              if (permission == LocationPermission.deniedForever) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Location permission permanently denied.')),
-                );
-                return;
-              }
-              Position position = await Geolocator.getCurrentPosition();
+            onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => Consumer<KeyBoxProvider>(
-                    builder: (context, provider, child) => MapScreen2(
-                      initialCenter:
-                          LatLng(position.latitude, position.longitude),
+                    builder: (context, provider, child) => MapScreenFlutterMap(
                       boxLocations: provider.keyboxes
                           .map((keybox) =>
                               LatLng(keybox.latitude, keybox.longitude))
@@ -90,18 +58,6 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      /*     drawer: Drawer(
-        child: ListView(
-          children: [
-            ListTile(
-              title: const Text('Home'),
-              onTap: () {
-                Navigator.pushReplacementNamed(context, '/');
-              },
-            ),
-          ],
-        ),
-      ), */
       body: CustomScrollView(
         slivers: [
           /* const SliverAppBar(
@@ -145,19 +101,6 @@ class HomeScreen extends StatelessWidget {
           }
         },
       ),
-      /*    bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-        ],
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.pushReplacementNamed(context, '/');
-          }
-        },
-      ), */
     );
   }
 }

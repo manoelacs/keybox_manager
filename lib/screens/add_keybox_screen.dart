@@ -31,6 +31,7 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
   bool isLoading = false;
   double latitude = 0.0;
   double longitude = 0.0;
+  String? _videoPath;
 
   @override
   void initState() {
@@ -71,6 +72,26 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
     setState(() {
       addressController.text = address;
     });
+  }
+
+  Future<void> _pickVideo() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickVideo(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _videoPath = pickedFile.path;
+      });
+    }
+  }
+
+  Future<void> _recordVideo() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickVideo(source: ImageSource.camera);
+    if (pickedFile != null) {
+      setState(() {
+        _videoPath = pickedFile.path;
+      });
+    }
   }
 
   @override
@@ -163,6 +184,28 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                           onPressed: pickImage,
                           child: const Text('Pick Photo'),
                         ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.video_library),
+                        label: const Text('Pick Video'),
+                        onPressed: _pickVideo,
+                      ),
+                      const SizedBox(width: 10),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.videocam),
+                        label: const Text('Record Video'),
+                        onPressed: _recordVideo,
+                      ),
+                    ],
+                  ),
+                  if (_videoPath != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Text(
+                          'Video selected: \\${_videoPath!.split('/').last}'),
+                    ),
                   const SizedBox(height: 20),
                   ElevatedButton(
                     child: const Text('Save'),
@@ -177,6 +220,7 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                           currentCode: currentCode,
                           latitude: latitude,
                           longitude: longitude,
+                          videoPath: _videoPath ?? '',
                         );
                         provider.addKeyBox(newKeyBox);
                         ScaffoldMessenger.of(context).showSnackBar(
