@@ -20,18 +20,19 @@ class KeyBoxAdapter extends TypeAdapter<KeyBox> {
       name: fields[0] as String,
       address: fields[1] as String,
       description: fields[2] as String,
-      photoPath: fields[3] as String,
       currentCode: fields[4] as String,
-      previousCodes: (fields[5] as List).cast<String>(),
+      photoPath: fields[3] as String,
+      previousCodes: (fields[5] as List?)?.cast<String>(),
       latitude: fields[6] as double,
       longitude: fields[7] as double,
+      videoPath: fields[8] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, KeyBox obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -43,7 +44,13 @@ class KeyBoxAdapter extends TypeAdapter<KeyBox> {
       ..writeByte(4)
       ..write(obj.currentCode)
       ..writeByte(5)
-      ..write(obj.previousCodes);
+      ..write(obj.previousCodes)
+      ..writeByte(6)
+      ..write(obj.latitude)
+      ..writeByte(7)
+      ..write(obj.longitude)
+      ..writeByte(8)
+      ..write(obj.videoPath);
   }
 
   @override

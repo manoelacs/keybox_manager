@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class LocationPicker extends StatefulWidget {
   final Function(LatLng) onLocationPicked;
-  final LatLng initialLocation;
 
   const LocationPicker({
     super.key,
     required this.onLocationPicked,
-    required this.initialLocation,
   });
 
   @override
@@ -46,35 +45,55 @@ class _LocationPickerState extends State<LocationPicker> {
           ),
         ],
       ),
-      body: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: widget.initialLocation,
-          zoom: 15,
+      body: FlutterMap(
+        options: MapOptions(
+          initialCenter: _pickedLocation ?? const LatLng(0.0, 0.0),
+          initialZoom: 13.0,
         ),
-        onTap: _onMapTapped,
-        markers: _pickedLocation != null
-            ? {
+        children: [
+          TileLayer(
+            urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            subdomains: const ['a', 'b', 'c'],
+            userAgentPackageName: 'com.example.keybox_manager',
+          ),
+          if (_pickedLocation != null)
+            MarkerLayer(
+              markers: [
                 Marker(
-                  markerId: const MarkerId('pickedLocation'),
-                  position: _pickedLocation!,
+                  point: _pickedLocation!,
+                  child: const Icon(Icons.location_on,
+                      color: Colors.red, size: 40),
                 ),
-              }
-            : {},
-      ),
-      /* floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => LocationPicker(
-                onLocationPicked: widget.onLocationPicked,
-                initialLocation: widget.initialLocation,
-              ),
+              ],
             ),
-          );
-        },
-        label: const Text('From Map'),
-        icon: const Icon(Icons.map),
+        ],
+      ), /* FlutterMap(
+        options: MapOptions(
+          center: _pickedLocation ?? const LatLng(0, 0),
+          zoom: 15,
+          onTap: (tapPosition, latlng) {
+            setState(() {
+              _pickedLocation = latlng;
+            });
+            widget.onLocationPicked(latlng);
+          },
+        ),
+        children: [
+          TileLayer(
+            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            subdomains: const ['a', 'b', 'c'],
+          ),
+          if (_pickedLocation != null)
+            MarkerLayer(
+              markers: [
+                Marker(
+                  point: _pickedLocation!,
+                  child: const Icon(Icons.location_on,
+                      color: Colors.red, size: 40),
+                ),
+              ],
+            ),
+        ],
       ), */
     );
   }

@@ -51,8 +51,8 @@ class KeyBox extends HiveObject {
         currentCode: json['currentCode'],
         photoPath: json['photoPath'],
         previousCodes: List<String>.from(json['previousCodes']),
-        latitude: json['latitude'],
-        longitude: json['longitude'],
+        latitude: (json['latitude'] ?? 0.0) as double,
+        longitude: (json['longitude'] ?? 0.0) as double,
         videoPath: json['videoPath'] ?? '',
       );
 

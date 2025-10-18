@@ -80,8 +80,17 @@ class _LocationButtonState extends State<LocationButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      icon: const Icon(Icons.location_on),
-      label: const Text('Pick My Location'),
+      icon: isLoading
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            )
+          : const Icon(Icons.location_on),
+      label: Text(isLoading ? 'Loading...' : 'Pick My Location'),
       onPressed: isLoading ? null : fetchAddressFromLocation,
     );
   }

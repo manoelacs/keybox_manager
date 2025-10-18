@@ -3,13 +3,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
+import 'package:keybox_manager/widgets/keybox_map.dart';
 import 'package:keybox_manager/widgets/location_picker.dart';
+import 'package:latlong2/latlong.dart' as latlong2;
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import '../models/keybox.dart';
 import '../providers/keybox_provider.dart';
 import '../utils/code_generator.dart';
 import '../widgets/location_button.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 
 class AddKeyBoxScreen extends StatefulWidget {
@@ -26,8 +28,10 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
   String description = '';
   String photoPath = '';
   String currentCode = '';
+  String googleMapsLink = '';
   final picker = ImagePicker();
   final addressController = TextEditingController();
+  final googleMapsController = TextEditingController();
   bool isLoading = false;
   double latitude = 0.0;
   double longitude = 0.0;
@@ -64,14 +68,14 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
     }
   }
 
-  void onLocationPicked(LatLng pickedLocation) async {
+  void onLocationPicked(latlong2.LatLng pickedLocation) async {
     latitude = pickedLocation.latitude;
     longitude = pickedLocation.longitude;
-    // Use a geocoding service to get the address from the latitude and longitude
     address = await getAddressFromCoordinates(latitude, longitude);
     setState(() {
       addressController.text = address;
     });
+    Navigator.pop(context); // Close picker after selection
   }
 
   Future<void> _pickVideo() async {
@@ -115,9 +119,13 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                   TextFormField(
                     controller: addressController,
                     decoration: const InputDecoration(labelText: 'Address'),
-                    onSaved: (value) =>
-                        address = value ?? 'The address of the KeyBox',
-                    validator: (value) => value!.isEmpty ? 'Required' : null,
+                    onSaved: (value) => address = value ?? '',
+                  ),
+                  TextFormField(
+                    controller: googleMapsController,
+                    decoration: const InputDecoration(
+                        labelText: 'Google Maps Link (Optional)'),
+                    onSaved: (value) => googleMapsLink = value ?? '',
                   ),
                   const SizedBox(height: 10),
                   LocationButton(
@@ -129,6 +137,29 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                         longitude = fetchedLongitude;
                         addressController.text = fetchedAddress;
                       });
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    child: const Text('Pick Location on Map'),
+                    onPressed: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => KeyBoxMap(
+                            markers: [],
+                            initialLocation:
+                                LatLng(latitude, longitude), // or your default
+                            pickMode: true,
+                            onLocationPicked: (LatLng picked) {
+                              setState(() {
+                                latitude = picked.latitude;
+                                longitude = picked.longitude;
+                              });
+                            },
+                          ),
+                        ),
+                      );
                     },
                   ),
                   TextFormField(
@@ -183,6 +214,15 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
+                        // If Google Maps link is provided, try to parse coordinates
+                        if (googleMapsLink.isNotEmpty) {
+                          final regex = RegExp(r"(-?\d+\.\d+),(-?\d+\.\d+)");
+                          final match = regex.firstMatch(googleMapsLink);
+                          if (match != null) {
+                            latitude = double.parse(match.group(1)!);
+                            longitude = double.parse(match.group(2)!);
+                          }
+                        }
                         final newKeyBox = KeyBox(
                           name: name,
                           address: address,
@@ -198,7 +238,6 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('KeyBox added')),
                         );
-
                         Navigator.pop(context);
                       }
                     },
