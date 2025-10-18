@@ -68,4 +68,13 @@ class KeyBoxProvider with ChangeNotifier {
     _currentLongitude = longitude;
     notifyListeners();
   }
+
+  void addExistingCode(KeyBox keybox, String newCode) {
+    final index = keyboxes.indexOf(keybox);
+    if (index != -1) {
+      keyboxes[index].previousCodes.add(keyboxes[index].currentCode);
+      keyboxes[index].currentCode = newCode;
+      notifyListeners();
+    }
+  }
 }

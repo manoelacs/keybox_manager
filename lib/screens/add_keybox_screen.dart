@@ -119,46 +119,17 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                         address = value ?? 'The address of the KeyBox',
                     validator: (value) => value!.isEmpty ? 'Required' : null,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      LocationButton(
-                        onLocationFetched: (fetchedAddress, fetchedLatitude,
-                            fetchedLongitude) {
-                          setState(() {
-                            address = fetchedAddress;
-                            latitude = fetchedLatitude;
-                            longitude = fetchedLongitude;
-                            addressController.text = fetchedAddress;
-                          });
-                        },
-                      ),
-                      const SizedBox(width: 10),
-                      /* Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LocationPicker(
-                                  onLocationPicked: onLocationPicked,
-                                  initialLocation: LatLng(latitude, longitude),
-                                ),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.map, color: Colors.blue),
-                          label: const Text('From Map',
-                              style: TextStyle(color: Colors.blue)),
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Colors.blue),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      ), */
-                    ],
+                  const SizedBox(height: 10),
+                  LocationButton(
+                    onLocationFetched:
+                        (fetchedAddress, fetchedLatitude, fetchedLongitude) {
+                      setState(() {
+                        address = fetchedAddress;
+                        latitude = fetchedLatitude;
+                        longitude = fetchedLongitude;
+                        addressController.text = fetchedAddress;
+                      });
+                    },
                   ),
                   TextFormField(
                     decoration: const InputDecoration(labelText: 'Description'),
@@ -220,6 +191,7 @@ class AddKeyBoxScreenState extends State<AddKeyBoxScreen> {
                           currentCode: currentCode,
                           latitude: latitude,
                           longitude: longitude,
+                          previousCodes: [],
                           videoPath: _videoPath ?? '',
                         );
                         provider.addKeyBox(newKeyBox);

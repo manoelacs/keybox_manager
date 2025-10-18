@@ -79,18 +79,10 @@ class _LocationButtonState extends State<LocationButton> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: OutlinedButton.icon(
-        onPressed: isLoading ? null : fetchAddressFromLocation,
-        icon: const Icon(Icons.location_on, color: Colors.blue),
-        label: const Text('My Location', style: TextStyle(color: Colors.blue)),
-        style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: Colors.blue),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-      ),
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.location_on),
+      label: const Text('Pick My Location'),
+      onPressed: isLoading ? null : fetchAddressFromLocation,
     );
   }
 }

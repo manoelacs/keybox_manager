@@ -2,9 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:hive_flutter/hive_flutter.dart';
+
 import 'package:keybox_manager/providers/keybox_provider.dart';
 
 import 'package:keybox_manager/utils/locations.dart';
+import 'package:keybox_manager/theme.dart'; // Import AppTheme
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'models/keybox.dart';
@@ -13,20 +15,15 @@ import 'screens/map_screen_flutter_map.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Hive.initFlutter();
   Hive.registerAdapter(KeyBoxAdapter());
-  var existingBox =
-      Hive.isBoxOpen('keyboxes') ? Hive.box<KeyBox>('keyboxes') : null;
-  if (existingBox != null) {
-    await existingBox.close();
-  }
 
-  var encryptionKey = Hive.generateSecureKey();
+  // Removed box closing logic to preserve older keyboxes
 
-  var box = await Hive.openBox<KeyBox>(
-    'keyboxes',
-    encryptionCipher: HiveAesCipher(encryptionKey),
-  );
+  var box = await Hive.openBox<KeyBox>('keyboxes');
+  // Clear box to remove legacy data and fix null value errors
+  await box.clear();
 
   if (kDebugMode) {
     print('Hive initialized with box: ${box.name}');
@@ -34,7 +31,7 @@ void main() async {
     print('Path: ${box.path}');
   }
 
-  if (box.isEmpty) {
+  /*  if (box.isEmpty) {
     // Initialize with default values if the box is empty
     box.put(
         'default',
@@ -46,8 +43,17 @@ void main() async {
           photoPath: '',
           latitude: 0.0,
           longitude: 0.0,
+          previousCodes: [],
+          videoPath: '',
         ));
-  }
+  } */
+
+  // Remove the default item after the first real KeyBox is added
+  box.watch().listen((event) {
+    if (box.length > 1 && box.containsKey('default')) {
+      box.delete('default');
+    }
+  });
 
   runApp(
     ChangeNotifierProvider(
@@ -64,31 +70,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'KeyBox Manager',
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-        scaffoldBackgroundColor: Colors.grey[100],
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.teal,
-          foregroundColor: Colors.white,
-          elevation: 0,
-        ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: Colors.teal,
-        ),
-        cardTheme: CardTheme(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 2,
-          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        ),
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(fontSize: 16),
-          bodyMedium: TextStyle(fontSize: 14),
-          titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-      ),
-      darkTheme: ThemeData.dark(), // Enables dark mode theme
+      theme: appTheme, // Use the custom light theme
+      darkTheme: appDarkTheme, // Use the custom dark theme
       themeMode: ThemeMode.system, // Uses system theme by default
       routes: {
         '/': (context) => const HomeScreen(),
@@ -113,4 +96,29 @@ class MyApp extends StatelessWidget {
       },
     );
   }
+}
+
+// Optional: Open Hive box with encryption using a persistent key
+// Usage: var box = await openEncryptedHiveBox<KeyBox>('keyboxes');
+// Requires flutter_secure_storage and dart:convert
+Future<Box<T>> openEncryptedHiveBox<T>(String boxName) async {
+  // Uncomment these lines and add dependencies if you want encryption
+  // import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+  // import 'dart:convert';
+  // final secureStorage = FlutterSecureStorage();
+  // const keyName = 'hive_keybox_manager_key';
+  // String? base64Key = await secureStorage.read(key: keyName);
+  // List<int> encryptionKey;
+  // if (base64Key == null) {
+  //   encryptionKey = Hive.generateSecureKey();
+  //   await secureStorage.write(key: keyName, value: base64Encode(encryptionKey));
+  // } else {
+  //   encryptionKey = base64Decode(base64Key);
+  // }
+  // return await Hive.openBox<T>(
+  //   boxName,
+  //   encryptionCipher: HiveAesCipher(encryptionKey),
+  // );
+  throw UnimplementedError(
+      'Encryption is not enabled. Uncomment and add dependencies to use.');
 }
