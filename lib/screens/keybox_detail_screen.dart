@@ -336,21 +336,39 @@ class KeyBoxDetailScreen extends StatelessWidget {
                                   (k) => k.name == keybox.name,
                                   orElse: () => keybox,
                                 );
+                                final googleMapsLink = (updatedKeybox
+                                                .latitude !=
+                                            0 &&
+                                        updatedKeybox.longitude != 0)
+                                    ? '\nGoogle Maps: https://www.google.com/maps/search/?api=1&query=${updatedKeybox.latitude},${updatedKeybox.longitude}'
+                                    : '';
+                                final shareText =
+                                    '${updatedKeybox.currentCode}\nAddress: ${updatedKeybox.address}$googleMapsLink\nDescription: ${updatedKeybox.description} ';
+
                                 if (updatedKeybox.videoPath.isNotEmpty) {
-                                  return OutlinedButton.icon(
+                                  return FilledButton.icon(
                                     onPressed: () async {
                                       await Share.shareXFiles(
                                         [XFile(updatedKeybox.videoPath)],
-                                        text:
-                                            'Video for KeyBox: ${updatedKeybox.name}',
-                                        subject: 'KeyBox Location Video',
+                                        text: shareText,
+                                        subject: 'KeyBox Details & Video',
                                       );
                                     },
-                                    icon: const Icon(Icons.videocam, size: 20),
-                                    label: const Text('Share Video'),
+                                    icon: const Icon(Icons.share, size: 20),
+                                    label: const Text('Share All'),
+                                  );
+                                } else {
+                                  return FilledButton.icon(
+                                    onPressed: () async {
+                                      await Share.share(
+                                        shareText,
+                                        subject: 'KeyBox Details',
+                                      );
+                                    },
+                                    icon: const Icon(Icons.share, size: 20),
+                                    label: const Text('Share All'),
                                   );
                                 }
-                                return const SizedBox.shrink();
                               },
                             ),
                           ],
